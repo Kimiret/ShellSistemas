@@ -14,12 +14,12 @@
 #define MAXINPUT 1024
 
 /*
-Se maneja recibir un input y el que hacer si es un input vacio
-Se manejan los parse de las pipes y los comandos dentro de las pipes sienmpre que solo los separe un espacio
-Se maneja la salida con exit y bloquea el uso de ctrl+c
-Se maneja la ejecucion de comandos, hace falta testear, el comando de ejemplo que dio la profe funciona
+Se maneja recibir un input y el que hacer si es un input vacio.
+Se manejan los parse de las pipes y los comandos dentro de las pipes sienmpre que solo los separe un espacio.
+Se maneja la salida con exit y bloquea el uso de ctrl+c.
+Se maneja la ejecucion de comandos, hace falta testear, el comando de ejemplo que dio la profe funciona.
 Se maneja la creacion de un daemon, no sabemos como restringir la ejecucion de otro comando de daemon mientras el anterior se sigue ejecutando
-asi que de momento solo se puede uno por cada instancia de la consola
+asi que de momento solo se puede uno por cada instancia de la consola, se podria arreglar con la implementacion de una señal.
 */
 
 void ctrl_c(){ //Se puede ingresar exit despues de esto, pero la instruccion es para que se vea el prompt
@@ -170,13 +170,20 @@ int main(){
                 }
                 exit(0);
             }else if(strcmp(args[0],"daemon")==0){//Si el usuario usa el comando daemon
-                int t = atoi(args[1]);
-                int p = atoi(args[2]);
+                int t,p;
                 if(args[1]==NULL || args[2]==NULL){
-                    perror("Faltan argumentos para la ejecucion del daemon");
+                    printf("Faltan argumentos para la ejecucion del daemon\n");
+                    free(args);
+                    i++;
                     continue;
-                }else if(t < 1 || p < t){
-                    perror("Los argumentos para el daemon no son vaildos");
+                }else{
+                    t = atoi(args[1]);
+                    p = atoi(args[2]);
+                } 
+                if(t < 1 || p < t){
+                    printf("Los argumentos para el daemon no son validos\n");
+                    free(args);
+                    i++;
                     continue;
                 }
                 if(daemon_run > 0){
